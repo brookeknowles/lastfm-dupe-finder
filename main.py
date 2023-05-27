@@ -1,9 +1,9 @@
-import requests
-from enum import Enum
 from collections import defaultdict
+from enum import Enum
 from pprint import pprint
 from typing import List
-import time
+
+import requests
 
 from config import get_api_key, get_api_secret, get_user_agent
 
@@ -22,7 +22,7 @@ USER_AGENT = get_user_agent()
 def get_pages(
     username: str,
     method: str,
-):
+) -> int:
     """
     Initial API call to get the number of pages to be fetched for given method
     :return:
@@ -60,7 +60,7 @@ def get_lastfm_data(
     method: str,
     limit: int = 500,
     page: int = 1
-):
+) -> dict:
     headers = {
         'user-agent': USER_AGENT
     }
@@ -85,7 +85,7 @@ def get_lastfm_data(
         return response
 
 
-def get_top_albums(username: str):
+def get_top_albums(username: str) -> List[dict]:
     pages = get_pages(username=username, method=Method.ALBUMS.value)
     page = 1
     top_albums = []
@@ -104,7 +104,7 @@ def get_top_albums(username: str):
     return top_albums
 
 
-def get_top_tracks(username: str):
+def get_top_tracks(username: str) -> List[dict]:
     pages = get_pages(username=username, method=Method.TRACKS.value)
     page = 1
     top_songs = []
@@ -150,7 +150,7 @@ def strings_to_remove(method) -> List[str]:
         return []
 
 
-def find_duplicates(data, method):
+def find_duplicates(data, method) -> List[dict]:
     """
     Finds all duplicates in a users last fm library
     :return:
