@@ -1,7 +1,7 @@
 from collections import defaultdict
 from enum import Enum
 from pprint import pprint
-from typing import List
+from typing import List, Union
 
 import requests
 
@@ -22,10 +22,13 @@ USER_AGENT = get_user_agent()
 def get_pages(
     username: str,
     method: str,
-) -> int:
+) -> Union[int, str]:
     """
     Initial API call to get the number of pages to be fetched for given method
-    :return:
+
+    :param username: Last.fm username to retrieve pages for
+    :param method: String indicating the type of data (ALBUMS or TRACKS)
+    :return: Number of pages of data to retrieve
     """
     headers = {
         'user-agent': USER_AGENT
@@ -60,7 +63,16 @@ def get_lastfm_data(
     method: str,
     limit: int = 500,
     page: int = 1
-) -> dict:
+) -> Union[dict, str]:
+    """
+    Fetches data via the Last.fm API for a given username and method
+
+    :param username: Last.fm username to retrieve pages for
+    :param method: String indicating the type of data (ALBUMS or TRACKS)
+    :param limit: Number of results to fetch per page (optional, defaults to 500)
+    :param page: The page number to fetch data from (optional, defaults to 1)
+    :return: JSON dictionary response from the Last.fm API
+    """
     headers = {
         'user-agent': USER_AGENT
     }
@@ -86,6 +98,12 @@ def get_lastfm_data(
 
 
 def get_top_albums(username: str) -> List[dict]:
+    """
+    Fetches every album the given user has scrobbled, ordered by playcount
+
+    :param username: Last.fm username to retrieve album data for
+    :return: List of dictionaries where each dict represents one album
+    """
     pages = get_pages(username=username, method=Method.ALBUMS.value)
     page = 1
     top_albums = []
@@ -95,7 +113,9 @@ def get_top_albums(username: str) -> List[dict]:
         for album in raw_data['topalbums']['album']:
             data = {
                 'artist': album['artist']['name'],
-                'title': album['name']
+                'title': album['name'],
+                'playcount': int(album['playcount']),
+                'url': album['url']
             }
             album_data.append(data)
 
@@ -105,6 +125,12 @@ def get_top_albums(username: str) -> List[dict]:
 
 
 def get_top_tracks(username: str) -> List[dict]:
+    """
+    Fetches every track the given user has scrobbled, ordered by playcount
+
+    :param username: Last.fm username to retrieve album data for
+    :return: List of dictionaries where each dict represents one track
+    """
     pages = get_pages(username=username, method=Method.TRACKS.value)
     page = 1
     top_songs = []
@@ -114,7 +140,9 @@ def get_top_tracks(username: str) -> List[dict]:
         for track in raw_data['toptracks']['track']:
             data = {
                 'artist': track['artist']['name'],
-                'title': track['name']
+                'title': track['name'],
+                'playcount': int(track['playcount']),
+                'url': track['url']
             }
             track_data.append(data)
 
@@ -123,13 +151,26 @@ def get_top_tracks(username: str) -> List[dict]:
     return top_songs
 
 
-def remove_strings(title: str, method) -> str:
+def remove_strings(title: str, method: str) -> str:
+    """
+    Strips each album/track title of any extra stuff that should be removed (e.g. 'remix')
+
+    :param title: The title to strip
+    :param method: String indicating the type of data (ALBUMS or TRACKS)
+    :return: The title stripped of it's extra unneeded characters
+    """
     for string in strings_to_remove(method):
         title = title.replace(string, '').strip()
     return title
 
 
-def strings_to_remove(method) -> List[str]:
+def strings_to_remove(method: str) -> List[str]:
+    """
+    The extra characters that need to be removed from the album and track titles
+
+    :param method: String indicating the type of data (ALBUMS or TRACKS)
+    :return: List of extra characters that need to be removed if they exist in a title
+    """
     if method == Method.ALBUMS:
         return [
             ' (Deluxe)',
@@ -150,10 +191,13 @@ def strings_to_remove(method) -> List[str]:
         return []
 
 
-def find_duplicates(data, method) -> List[dict]:
+def find_duplicates(data: List[dict], method: str) -> List[dict]:
     """
-    Finds all duplicates in a users last fm library
-    :return:
+    Finds all duplicates in a user's Last.fm library
+
+    :param data: List of dictionaries containing the Last.fm data
+    :param method: String indicating the type of data (ALBUMS or TRACKS)
+    :return: List of dictionaries representing the duplicate information
     """
     duplicates = defaultdict(list)
 
@@ -161,7 +205,7 @@ def find_duplicates(data, method) -> List[dict]:
         artist = item['artist']
         title = item['title']
         base_title = remove_strings(title, method)
-        duplicates[(base_title, artist)].append(title)
+        duplicates[(base_title, artist)].append(item)
 
     duplicate_info = []
 
@@ -170,22 +214,30 @@ def find_duplicates(data, method) -> List[dict]:
         version_count = len(values)
 
         if version_count > 1:  # Only include items with version_count > 1
-            versions = values
+            versions = []
+
+            for item in values:
+                version = {
+                    'title': item['title'],
+                    'playcount': item['playcount'],
+                    'url': item['url']
+                }
+
+                versions.append(version)
+
+            total_playcount = sum(item['playcount'] for item in values)
+
             duplicate_dict = {
                 'base-title': base_title,
                 'artist': artist,
+                'total-playcount': total_playcount,
                 'version-count': version_count,
                 'versions': versions
             }
+
             duplicate_info.append(duplicate_dict)
 
     # Sort the duplicate information by the version count (from highest to lowest)
     duplicate_info.sort(key=lambda x: x['version-count'], reverse=True)
 
     return duplicate_info
-
-
-if __name__ == '__main__':
-    username = "brookeyuh"
-    data = get_top_tracks(username)
-    print(find_duplicates(data, Method.TRACKS))
