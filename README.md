@@ -4,7 +4,7 @@
 
 Simple web app used to identify potential track or album duplicates in your last.fm library. 
 
-Those of us deranged enough to record every song we've ever listened to know the drill, deluxe albums, 15-year anniversary editions, remasters, (Taylor's Version)'s... we know it's all the same, but last.fm does not.
+Those of us deranged enough to record every song we've ever listened to know the drill: deluxe albums, 15-year anniversary editions, remasters, (Taylor's Version)'s... we know it's all the same, but last.fm does not.
 
 Enter **last.fm dupe finder**. Just type in your username and this app will look through your entire library and display a table full of all the duplicates you have, along with handy links to go edit them yourself.
 
@@ -22,5 +22,6 @@ Enter **last.fm dupe finder**. Just type in your username and this app will look
 ---
 
 ### 🚧 Roadmap
+- Bug where version count and playcount are displayed in eachothers place 🤡
 - Ability to edit the scrobbles automatically within app
 - Make website less ugly?
