@@ -1,36 +1,11 @@
-import axios from 'axios';
-import { getApiKey, getApiSecret, getUserAgent } from './config';
-// import { Album, Track } from './models';
-import { Method } from './enums';
-import { pmap } from 'pycollections';
-
-interface Album {
-  artist: string;
-  title: string;
-  playcount: number;
-  url: string;
-}
-
-interface Track {
-  artist: string;
-  name: string;
-  playcount: number;
-  url: string;
-}
-
-interface DuplicateInfo<T> {
-  title: string;
-  artist: string;
-  "total-playcount": number;
-  versions: T[];
-}
-
-type Item = Album | Track;
+import axios, {AxiosRequestConfig} from 'axios';
+import {getApiKey, getUserAgent} from './config';
+import {Album, DuplicateInfo, Item, Track} from './models';
+import {Method} from './enums';
 
 
 // Last FM API setup
 const API_KEY = getApiKey();
-const API_SECRET = getApiSecret();
 const USER_AGENT = getUserAgent();
 
 async function getPages(username: string, method: string): Promise<number | string> {
@@ -49,15 +24,14 @@ async function getPages(username: string, method: string): Promise<number | stri
 
   try {
     console.log("getting number of pages to fetch...")
-    const response = await axios.get(url, { headers, params: payload });
+    const response = await axios.get(url, { headers, params: payload } as AxiosRequestConfig);
 
     if (response.status !== 200) {
       return `Exception occurred with status code: ${response.status}.\nError: ${response.data}`;
     }
 
     const { topalbums, toptracks } = response.data;
-    const totalPages = method === Method.ALBUMS ? parseInt(topalbums['@attr'].totalPages) : parseInt(toptracks['@attr'].totalPages);
-    return totalPages;
+    return method === Method.ALBUMS ? parseInt(topalbums['@attr'].totalPages) : parseInt(toptracks['@attr'].totalPages);
   } catch (error) {
     return `Exception occurred: ${error.message}`;
   }
@@ -78,7 +52,7 @@ async function getLastFmData(username: string, method: string, limit = 500, page
   const url = 'https://ws.audioscrobbler.com/2.0/';
 
   try {
-    const response = await axios.get(url, { headers, params: payload });
+    const response = await axios.get(url, { headers, params: payload } as AxiosRequestConfig);
 
     if (response.status !== 200) {
       return `Exception occurred with status code: ${response.status}.\nError: ${response.data}`;
@@ -90,36 +64,6 @@ async function getLastFmData(username: string, method: string, limit = 500, page
   }
 }
 
-function removeStrings(title: string, method: string): string {
-  const stringsToRemove = getStringsToRemove(method);
-  for (const string of stringsToRemove) {
-    title = title.replace(string, '').trim();
-  }
-  return title;
-}
-
-function getStringsToRemove(method: string): string[] {
-  if (method === Method.ALBUMS) {
-    return [
-      ' (Deluxe)',
-      ' (Deluxe Edition)',
-      ' (Digital Deluxe Version)',
-      ' (Special Edition)',
-      ' (Acoustic)',
-    ];
-  } else if (method === Method.TRACKS) {
-    return [
-      ' - Remix',
-      ' (Acoustic)',
-      ' (Acoustic version)',
-      ' (Remix)',
-      ' - Acoustic',
-    ];
-  } else {
-    return [];
-  }
-}
-
 function findDuplicates<T extends Item>(items: T[]): DuplicateInfo<T>[] {
   const duplicateInfo: DuplicateInfo<T>[] = [];
 
@@ -128,10 +72,9 @@ function findDuplicates<T extends Item>(items: T[]): DuplicateInfo<T>[] {
   };
 
   items.forEach((item, index) => {
-    const title = removeStrings('title' in item ? item.title : item.name);
+    const title = removeStrings('title' in item ? (item as { title: string }).title : (item as { name: string }).name);
     const artist = item.artist;
     const playcount = item.playcount;
-    const url = item.url;
 
     const duplicate = duplicateInfo.find((info) => {
       return info.title === title && info.artist === artist;
