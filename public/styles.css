@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
+
+body {
+  font-family: 'Barlow', sans-serif;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -24,3 +30,25 @@ form {
   text-align: center;
 }
 
+input[type="submit"] {
+    background-color: #d92323;
+    border-radius: 3px;
+    border: #d92323;
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    min-height: 40px;
+    min-width: 80px;
+    padding: 9px 20px 10px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: background-color;
+    vertical-align: middle;
+}
+
+input[type="submit"]:hover {
+    background-color: #f71414;
+    cursor: pointer;
+}

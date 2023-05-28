@@ -8,34 +8,37 @@
   <div class="container">
     <div>
       <h1 class="title">Last.fm Duplicates Finder</h1>
-      <form action="/duplicates" method="post">
-        <label for="username">Last.fm Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br><br>
-        <label for="method">Method:</label>
-        <select id="method" name="method" required>
-          <option value="albums">Find Album Duplicates</option>
-          <option value="tracks">Find Track Duplicates</option>
-        </select>
-        <br><br>
+      <form>
+        <div class="form-group">
+          <label for="username">Last.fm Username:</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="method">Method:</label>
+          <select id="method" name="method" required>
+            <option value="albums">Find Album Duplicates</option>
+            <option value="tracks">Find Track Duplicates</option>
+          </select>
+        </div>
         <input type="submit" value="Find Duplicates">
       </form>
     </div>
   </div>
-  <br>
-  <h2>Duplicates:</h2>
-  <table id="duplicatesTable">
-    <thead>
-      <tr>
-        <th>Artist</th>
-        <th>Base Title</th>
-        <th>Version Count</th>
-        <th>Total Playcount</th>
-        <th>Versions</th>
-      </tr>
-    </thead>
-    <tbody id="duplicatesTableBody"></tbody>
-  </table>
+  <div class="log-container">
+    <h2>Duplicates:</h2>
+    <table id="duplicatesTable">
+      <thead>
+        <tr>
+          <th>Artist</th>
+          <th>Base Title</th>
+          <th>Version Count</th>
+          <th>Total Playcount</th>
+          <th>Versions</th>
+        </tr>
+      </thead>
+      <tbody id="duplicatesTableBody"></tbody>
+    </table>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>

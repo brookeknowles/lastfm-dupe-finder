@@ -18,7 +18,7 @@ document.querySelector('form').addEventListener('submit', async (event) => {
   duplicatesTableBody.innerHTML = '';
 
   if (duplicates && duplicates.length > 0) {
-    duplicates.forEach((duplicate) => {
+    duplicates.forEach((duplicate, index) => {
       console.log('Processing Duplicate:', duplicate);
       const row = document.createElement('tr');
 
