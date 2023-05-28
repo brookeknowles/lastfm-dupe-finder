@@ -8,3 +8,19 @@ th, td {
   padding: 8px;
   text-align: left;
 }
+
+.title, h2 {
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  margin-bottom: -500px;
+}
+
+form {
+  text-align: center;
+}
+

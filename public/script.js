@@ -30,19 +30,29 @@ document.querySelector('form').addEventListener('submit', async (event) => {
       baseTitleCell.textContent = duplicate.title;
       row.appendChild(baseTitleCell);
 
-      const versionCountCell = document.createElement('td');
-      versionCountCell.textContent = duplicate.versions.length;
-      row.appendChild(versionCountCell);
-
       const totalPlaycountCell = document.createElement('td');
       totalPlaycountCell.textContent = duplicate['total-playcount'];
       row.appendChild(totalPlaycountCell);
+
+      const versionCountCell = document.createElement('td');
+      versionCountCell.textContent = duplicate.versions.length;
+      row.appendChild(versionCountCell);
 
       const versionsCell = document.createElement('td');
       const versionsList = document.createElement('ul');
       duplicate.versions.forEach((version) => {
         const versionItem = document.createElement('li');
-        versionItem.textContent = JSON.stringify(version, null, 2);
+        const versionLink = document.createElement('a');
+        versionLink.textContent = version.title;
+        versionLink.href = version.url;
+        versionLink.target = '_blank';
+        versionItem.appendChild(versionLink);
+
+        const playcountSpan = document.createElement('span');
+        const playcountText = version.playcount === 1 ? 'scrobble' : 'scrobbles';
+        playcountSpan.textContent = ` (${version.playcount} ${playcountText})`;
+        versionItem.appendChild(playcountSpan);
+
         versionsList.appendChild(versionItem);
       });
       versionsCell.appendChild(versionsList);
