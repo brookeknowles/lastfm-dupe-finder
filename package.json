@@ -1,0 +1,37 @@
+{
+  "name": "lastfm-dupe-finder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brookeknowles/lastfm-dupe-finder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brookeknowles/lastfm-dupe-finder/issues"
+  },
+  "homepage": "https://github.com/brookeknowles/lastfm-dupe-finder#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.2",
+    "@babel/preset-typescript": "^7.21.5",
+    "@types/node": "^20.2.5",
+    "babel-node": "^0.0.1-security",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "express": "^4.18.2",
+    "lodash": "^4.17.21",
+    "pycollections": "^0.9.0"
+  }
+}
