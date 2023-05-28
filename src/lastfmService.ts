@@ -1,8 +1,7 @@
-import axios, {AxiosRequestConfig} from 'axios';
-import {getApiKey, getUserAgent} from './config';
-import {Album, DuplicateInfo, Item, Track} from './models';
-import {Method} from './enums';
-
+import axios, { AxiosRequestConfig } from 'axios';
+import { getApiKey, getUserAgent } from './config';
+import { Album, DuplicateInfo, Item, Track } from './models';
+import { Method } from './enums';
 
 // Last FM API setup
 const API_KEY = getApiKey();
@@ -23,7 +22,7 @@ async function getPages(username: string, method: string): Promise<number | stri
   const url = 'https://ws.audioscrobbler.com/2.0/';
 
   try {
-    console.log("getting number of pages to fetch...")
+    console.log('Getting number of pages to fetch...');
     const response = await axios.get(url, { headers, params: payload } as AxiosRequestConfig);
 
     if (response.status !== 200) {
@@ -68,26 +67,32 @@ function findDuplicates<T extends Item>(items: T[]): DuplicateInfo<T>[] {
   const duplicateInfo: DuplicateInfo<T>[] = [];
 
   const removeStrings = (str: string): string => {
-    return str.replace(/\(.*\)/g, "").trim();
+    return str.replace(/\(.*\)/g, '').trim();
   };
 
   items.forEach((item, index) => {
     const title = removeStrings('title' in item ? (item as { title: string }).title : (item as { name: string }).name);
     const artist = item.artist;
     const playcount = item.playcount;
+    const url = item.url;
 
     const duplicate = duplicateInfo.find((info) => {
       return info.title === title && info.artist === artist;
     });
 
     if (duplicate) {
-      duplicate["total-playcount"] += playcount;
-      duplicate.versions.push({ ...(item as T) });
+      const isDuplicate =
+        duplicate.versions.findIndex((version) => version.title === title && version.url === url) === -1;
+
+      if (isDuplicate) {
+        duplicate['total-playcount'] += playcount;
+        duplicate.versions.push({ ...(item as T) });
+      }
     } else {
       duplicateInfo.push({
         title,
         artist,
-        "total-playcount": playcount,
+        'total-playcount': playcount,
         versions: [{ ...(item as T) }],
       });
     }
@@ -102,7 +107,7 @@ async function getTopAlbums(username: string): Promise<Album[]> {
   const topAlbums: Album[] = [];
 
   while (typeof pages === 'number' && page < pages + 1) {
-      console.log(`getting top albums for page ${page} of ${pages}`)
+    console.log(`Getting top albums for page ${page} of ${pages}`);
     const rawAlbumData = await getLastFmData(username, Method.ALBUMS, 500, page);
     if (typeof rawAlbumData === 'string') {
       console.error(rawAlbumData);
@@ -126,7 +131,7 @@ async function getTopTracks(username: string): Promise<Track[]> {
   const topTracks: Track[] = [];
 
   while (typeof pages === 'number' && page < pages + 1) {
-    console.log(`getting top tracks for page ${page} of ${pages}`)
+    console.log(`Getting top tracks for page ${page} of ${pages}`);
     const rawTrackData = await getLastFmData(username, Method.TRACKS, 500, page);
     if (typeof rawTrackData === 'string') {
       console.error(rawTrackData);
@@ -145,8 +150,4 @@ async function getTopTracks(username: string): Promise<Track[]> {
   return topTracks;
 }
 
-export {
-  getTopAlbums,
-  getTopTracks,
-  findDuplicates
-};
+export { getTopAlbums, getTopTracks, findDuplicates };

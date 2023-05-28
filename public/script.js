@@ -21,21 +21,22 @@ document.querySelector('form').addEventListener('submit', async (event) => {
     duplicates.forEach((duplicate) => {
       console.log('Processing Duplicate:', duplicate);
       const row = document.createElement('tr');
-      const baseTitleCell = document.createElement('td');
-      baseTitleCell.textContent = duplicate.title;
-      row.appendChild(baseTitleCell);
 
       const artistCell = document.createElement('td');
       artistCell.textContent = duplicate.artist;
       row.appendChild(artistCell);
 
-      const totalPlaycountCell = document.createElement('td');
-      totalPlaycountCell.textContent = duplicate['total-playcount'];
-      row.appendChild(totalPlaycountCell);
+      const baseTitleCell = document.createElement('td');
+      baseTitleCell.textContent = duplicate.title;
+      row.appendChild(baseTitleCell);
 
       const versionCountCell = document.createElement('td');
       versionCountCell.textContent = duplicate.versions.length;
       row.appendChild(versionCountCell);
+
+      const totalPlaycountCell = document.createElement('td');
+      totalPlaycountCell.textContent = duplicate['total-playcount'];
+      row.appendChild(totalPlaycountCell);
 
       const versionsCell = document.createElement('td');
       const versionsList = document.createElement('ul');

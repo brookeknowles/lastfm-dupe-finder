@@ -7,7 +7,7 @@ export interface Album {
 
 export interface Track {
   artist: string;
-  name: string;
+  title: string;
   playcount: number;
   url: string;
 }
