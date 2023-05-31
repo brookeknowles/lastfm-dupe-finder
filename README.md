@@ -22,6 +22,5 @@ Enter **last.fm dupe finder**. Just type in your username and this app will look
 ---
 
 ### 🚧 Roadmap
-- Bug where version count and playcount are displayed in eachothers place 🤡
 - Ability to edit the scrobbles automatically within app
 - Make website less ugly?
