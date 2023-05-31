@@ -23,19 +23,26 @@
     </div>
   </div>
   <br>
+  <br>
+  <div class="progressBar">
+    <div class="movingProgress"></div>
+    <div class="progressMessage"></div>
+  </div>
+  <br>
   <h2>Duplicates:</h2>
   <table id="duplicatesTable">
     <thead>
       <tr>
         <th>Artist</th>
         <th>Base Title</th>
-        <th>Version Count</th>
         <th>Total Playcount</th>
+        <th>Version Count</th>
         <th>Versions</th>
       </tr>
     </thead>
     <tbody id="duplicatesTableBody"></tbody>
   </table>
   <script src="script.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
 </body>
 </html>

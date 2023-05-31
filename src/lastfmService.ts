@@ -22,7 +22,6 @@ async function getPages(username: string, method: string): Promise<number | stri
   const url = 'https://ws.audioscrobbler.com/2.0/';
 
   try {
-    console.log('Getting number of pages to fetch...');
     const response = await axios.get(url, { headers, params: payload } as AxiosRequestConfig);
 
     if (response.status !== 200) {
@@ -101,16 +100,18 @@ function findDuplicates<T extends Item>(items: T[]): DuplicateInfo<T>[] {
   return duplicateInfo.filter((info) => info.versions.length > 1);
 }
 
-async function getTopAlbums(username: string): Promise<Album[]> {
+async function getTopAlbums(username: string, progressCallback: (progress: number, message: string) => void): Promise<Album[]> {
   const pages = await getPages(username, Method.ALBUMS);
   let page = 1;
   const topAlbums: Album[] = [];
 
   while (typeof pages === 'number' && page < pages + 1) {
-    console.log(`Getting top albums for page ${page} of ${pages}`);
+    const progress = ((page / pages) * 100).toFixed(2);
+    const message = `${progress}% complete - retrieving albums data for page ${page} of ${pages}`;
+    progressCallback(Number(progress), message);
+
     const rawAlbumData = await getLastFmData(username, Method.ALBUMS, 500, page);
     if (typeof rawAlbumData === 'string') {
-      console.error(rawAlbumData);
       return [];
     }
     const albumData: Album[] = rawAlbumData.topalbums.album.map((album: any) => ({
@@ -125,16 +126,18 @@ async function getTopAlbums(username: string): Promise<Album[]> {
   return topAlbums;
 }
 
-async function getTopTracks(username: string): Promise<Track[]> {
+async function getTopTracks(username: string, progressCallback: (progress: number, message: string) => void): Promise<Track[]> {
   const pages = await getPages(username, Method.TRACKS);
   let page = 1;
   const topTracks: Track[] = [];
 
   while (typeof pages === 'number' && page < pages + 1) {
-    console.log(`Getting top tracks for page ${page} of ${pages}`);
+    const progress = ((page / pages) * 100).toFixed(2);
+    const message = `${progress}% complete - retrieving tracks data for page ${page} of ${pages}`;
+    progressCallback(Number(progress), message);
+
     const rawTrackData = await getLastFmData(username, Method.TRACKS, 500, page);
     if (typeof rawTrackData === 'string') {
-      console.error(rawTrackData);
       return [];
     }
     const trackData: Track[] = rawTrackData.toptracks.track.map((track: any) => ({
